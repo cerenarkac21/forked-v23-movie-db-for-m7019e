@@ -32,6 +32,10 @@ class MovieListFragment : Fragment() {
     private var _binding: FragmentMovieListBinding? = null;
     private val binding get() = _binding!!
 
+    // create a property to keep track of which layout state the app is in
+    //  the linear layout manager will be used by default
+    private var isLinearLayoutManager = true
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -116,5 +120,14 @@ class MovieListFragment : Fragment() {
                 return true
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun chooseLayout() {
+        if (isLinearLayoutManager) {
+            recyclerView.layoutManager = LinearLayoutManager(context)
+        } else {
+            recyclerView.layoutManager = GridLayoutManager(context, 4)
+        }
+        recyclerView.adapter = LetterAdapter()
     }
 }
