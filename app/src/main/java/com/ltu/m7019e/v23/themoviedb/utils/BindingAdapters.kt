@@ -9,7 +9,7 @@ fun bindPosterImage(imgView: ImageView, imgUrl:String) {
     imgUrl.let { posterPath ->
         Glide
             .with(imgView)
-            .load(Constants.POSTER_IMAGE_BASE_URL + Constants.POSTER_IMAGE_WIDTH + posterPath)
+            .load(SECRETS.POSTER_IMAGE_BASE_URL + SECRETS.POSTER_IMAGE_WIDTH + posterPath)
             .into(imgView);
     }
 }
@@ -19,7 +19,7 @@ fun bindBackdropImage(imgView: ImageView, imgUrl:String) {
     imgUrl.let { backdropPath ->
         Glide
             .with(imgView)
-            .load(Constants.BACKDROP_IMAGE_BASE_URL + Constants.BACKDROP_IMAGE_WIDTH + backdropPath)
+            .load(SECRETS.BACKDROP_IMAGE_BASE_URL + SECRETS.BACKDROP_IMAGE_WIDTH + backdropPath)
             .into(imgView);
     }
 }

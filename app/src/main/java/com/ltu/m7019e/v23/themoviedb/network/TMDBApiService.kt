@@ -1,6 +1,6 @@
 package com.ltu.m7019e.v23.themoviedb.network
 
-import com.ltu.m7019e.v23.themoviedb.utils.Constants
+import com.ltu.m7019e.v23.themoviedb.utils.SECRETS
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
@@ -44,19 +44,19 @@ private val movieListRetrofit = Retrofit.Builder()
             .build()
     )
     .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .baseUrl(Constants.MOVIE_LIST_BASE_URL)
+    .baseUrl(SECRETS.MOVIE_LIST_BASE_URL)
     .build()
 
 interface TMDBApiService {
     @GET("popular")
     suspend fun getPopularMovies(
         @Query("api_key")
-        apiKey: String = Constants.API_KEY
+        apiKey: String = SECRETS.API_KEY
     ): MovieResponse
     @GET("top_rated")
     suspend fun getTopRatedMovies(
         @Query("api_key")
-        apiKey: String = Constants.API_KEY
+        apiKey: String = SECRETS.API_KEY
     ): MovieResponse
 }
 

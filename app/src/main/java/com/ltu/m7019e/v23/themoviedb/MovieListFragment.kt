@@ -23,7 +23,7 @@ import com.ltu.m7019e.v23.themoviedb.viewmodel.MovieListViewModelFactory
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class MovieListFragment : Fragment() {
-
+// merhaba
     private lateinit var viewModel: MovieListViewModel
     private lateinit var viewModelFactory: MovieListViewModelFactory
 
