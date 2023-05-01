@@ -14,8 +14,10 @@ import java.util.concurrent.TimeUnit
 /**
  * Build the Moshi object that Retrofit will be using, making sure to add the Kotlin adapter for
  * full Kotlin compatibility.
+ * (JSON to Kotlin mapper)
  */
 private val moshi = Moshi.Builder()
+    // use the built-in adapter factory to map the JSON into your classes
     .add(KotlinJsonAdapterFactory())
     .build()
 
@@ -23,6 +25,7 @@ private val moshi = Moshi.Builder()
 /**
  * Add a httpclient logger for debugging purpose
  * object.
+ * Also it enables you to define your own encryption/decryption logic
  */
 fun getLoggerIntercepter(): HttpLoggingInterceptor {
     val logging = HttpLoggingInterceptor()
@@ -31,12 +34,16 @@ fun getLoggerIntercepter(): HttpLoggingInterceptor {
 }
 
 /**
+ * Refrofit is a HTTP client that will query the API endpoints
+ * Moshi will parse JSON objects to Kotlin objects
  * Use the Retrofit builder to build a retrofit object using a Moshi converter with our Moshi
  * object.
  */
 
 private val movieListRetrofit = Retrofit.Builder()
+    // create a client
     .client(
+        // to use the intercepter defined above
         OkHttpClient.Builder()
             .addInterceptor(getLoggerIntercepter())
             .connectTimeout(20, TimeUnit.SECONDS)
@@ -47,19 +54,28 @@ private val movieListRetrofit = Retrofit.Builder()
     .baseUrl(SECRETS.MOVIE_LIST_BASE_URL)
     .build()
 
+
+// create the main interface that defines TMDBApiService
 interface TMDBApiService {
+    // the string that will be added to the base URL is "popular"
     @GET("popular")
     suspend fun getPopularMovies(
+        // after /popular?, "api_key" will be added to the URL
         @Query("api_key")
         apiKey: String = SECRETS.API_KEY
     ): MovieResponse
+
     @GET("top_rated")
     suspend fun getTopRatedMovies(
         @Query("api_key")
         apiKey: String = SECRETS.API_KEY
     ): MovieResponse
+
+    //@GET()
 }
 
 object TMDBApi {
+    // initialization will be lazy
+    // create the built Retrofit object
     val movieListRetrofitService: TMDBApiService by lazy { movieListRetrofit.create(TMDBApiService::class.java)}
 }
