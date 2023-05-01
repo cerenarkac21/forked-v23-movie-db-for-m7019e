@@ -5,16 +5,15 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
-import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import com.ltu.m7019e.v23.themoviedb.adapter.MovieListAdapter
 import com.ltu.m7019e.v23.themoviedb.adapter.MovieListClickListener
 import com.ltu.m7019e.v23.themoviedb.database.MovieDatabase
 import com.ltu.m7019e.v23.themoviedb.database.MovieDatabaseDao
 import com.ltu.m7019e.v23.themoviedb.databinding.FragmentMovieListBinding
-import com.ltu.m7019e.v23.themoviedb.databinding.MovieListItemBinding
 import com.ltu.m7019e.v23.themoviedb.network.DataFetchStatus
 import com.ltu.m7019e.v23.themoviedb.viewmodel.MovieListViewModel
 import com.ltu.m7019e.v23.themoviedb.viewmodel.MovieListViewModelFactory
@@ -23,7 +22,6 @@ import com.ltu.m7019e.v23.themoviedb.viewmodel.MovieListViewModelFactory
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
 class MovieListFragment : Fragment() {
-// merhaba
     private lateinit var viewModel: MovieListViewModel
     private lateinit var viewModelFactory: MovieListViewModelFactory
 
@@ -31,10 +29,6 @@ class MovieListFragment : Fragment() {
 
     private var _binding: FragmentMovieListBinding? = null;
     private val binding get() = _binding!!
-
-    // create a property to keep track of which layout state the app is in
-    //  the linear layout manager will be used by default
-    private var isLinearLayoutManager = true
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,6 +47,8 @@ class MovieListFragment : Fragment() {
             MovieListClickListener { movie ->
                 viewModel.onMovieListItemClicked(movie)
             })
+        // set the layout manager as grid layout manager
+        binding.movieListRv.layoutManager = GridLayoutManager(context, 4)
         binding.movieListRv.adapter = movieListAdapter
         viewModel.movieList.observe(viewLifecycleOwner) { movieList ->
             movieList?.let {
@@ -90,6 +86,7 @@ class MovieListFragment : Fragment() {
         return binding.root
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         // The usage of an interface lets you inject your own implementation
         val menuHost: MenuHost = requireActivity()
@@ -102,6 +99,7 @@ class MovieListFragment : Fragment() {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 // Add menu items here
                 menuInflater.inflate(R.menu.menu_main, menu)
+
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -121,13 +119,5 @@ class MovieListFragment : Fragment() {
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
-
-    private fun chooseLayout() {
-        if (isLinearLayoutManager) {
-            recyclerView.layoutManager = LinearLayoutManager(context)
-        } else {
-            recyclerView.layoutManager = GridLayoutManager(context, 4)
-        }
-        recyclerView.adapter = LetterAdapter()
-    }
 }
+

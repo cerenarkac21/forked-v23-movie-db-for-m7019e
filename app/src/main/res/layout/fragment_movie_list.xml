@@ -4,14 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="movies"
             type="com.ltu.m7019e.v23.themoviedb.database.Movies" />
     </data>
 
-    <FrameLayout
+    <GridLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
         tools:context=".MainActivity">
 
         <ImageView
@@ -29,9 +31,11 @@
             android:id="@+id/movie_list_rv"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_margin="6dp"
+            android:layout_marginLeft="0dp"
             android:scrollbars="vertical"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
-    </FrameLayout>
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+    </GridLayout>
 
 
 </layout>
