@@ -16,4 +16,8 @@
     <string name="movies_are_being_loaded">Movies are being Loaded</string>
     <string name="save_locally">Save Locally</string>
     <string name="remove_locally">Remove Locally</string>
+    <string name="trailers">Trailers</string>
+    <string name="reviews">Reviews</string>
+    <string name="videos">Videos</string>
+    <string name="go_to_movie">Go to movie</string>
 </resources>

@@ -2,6 +2,8 @@ package com.ltu.m7019e.v23.themoviedb
 
 import android.os.Bundle
 import android.view.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -88,6 +90,17 @@ class MovieListFragment : Fragment() {
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        val toolbar = requireActivity().findViewById<Toolbar>(R.id.toolbar)
+
+        // cast the Activity to an AppCompatActivity.
+        // Because the MainActivity class in main_activity.kt inherits AppCompatActivity.
+        (requireActivity() as AppCompatActivity).setSupportActionBar(toolbar)
+        val title = "Movie DB App"
+        val actionBar = (activity as AppCompatActivity).supportActionBar
+        actionBar?.title = title
+        // DO NOT add the back button to the bar
+        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
+
         // The usage of an interface lets you inject your own implementation
         val menuHost: MenuHost = requireActivity()
 

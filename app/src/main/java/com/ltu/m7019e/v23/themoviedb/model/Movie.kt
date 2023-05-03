@@ -30,6 +30,16 @@ data class Movie(
         @Json(name = "release_date")
         var releaseDate: String,
 
+        /*
+        @ColumnInfo(name = "imdb_id")
+        @Json(name = "imdb_id")
+        var imdbId: String,
+
+        @ColumnInfo(name = "homepage")
+        @Json(name = "homepage")
+        var homepage: String,
+         */
+
         @ColumnInfo(name = "overview")
         @Json(name = "overview")
         var overview: String

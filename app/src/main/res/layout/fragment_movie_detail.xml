@@ -75,5 +75,15 @@
             android:visibility="@{viewModel.isFavorite ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@+id/back_to_movie_list"
             app:layout_constraintEnd_toEndOf="parent" />
+        <Button
+            android:id="@+id/reviews_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:text="@string/reviews"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.479"
+            app:layout_constraintStart_toEndOf="@+id/back_to_movie_list" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -3,6 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.ltu.m7019e.v23.themoviedb.MainActivity">
     <item
+        android:id="@+id/action_switch_layout"
+        android:icon="@drawable/ic_linear_layout"
+        android:title="@string/action_switch_layout"
+        android:visible="true"
+        app:showAsAction="always" /> <!--  button will always be visible in the app bar -->
+
+    <item
         android:id="@+id/action_load_popular_movies"
         android:title="@string/action_load_popular_movies"
         />

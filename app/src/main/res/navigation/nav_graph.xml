@@ -27,5 +27,23 @@
         <argument
             android:name="movie"
             app:argType="com.ltu.m7019e.v23.themoviedb.model.Movie" />
+        <action
+            android:id="@+id/action_MovieDetailFragment_to_movieVideosAndReviews"
+            app:destination="@id/MovieVideosAndReviews" />
+    </fragment>
+    <fragment
+        android:id="@+id/MovieVideosAndReviews"
+        android:name="com.ltu.m7019e.v23.themoviedb.MovieVideosAndReviewsFragment"
+        android:label="fragment_movie_videos_and_reviews"
+        tools:layout="@layout/fragment_movie_videos_and_reviews" >
+        <action
+            android:id="@+id/action_movieVideosAndReviews_to_MovieDetailFragment"
+            app:destination="@id/MovieDetailFragment" />
+        <argument
+            android:name="movie"
+            app:argType="com.ltu.m7019e.v23.themoviedb.model.Movie" />
+        <action
+            android:id="@+id/action_movieVideosAndReviews_to_MovieListFragment"
+            app:destination="@id/MovieListFragment" />
     </fragment>
 </navigation>
