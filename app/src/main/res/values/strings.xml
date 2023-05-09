@@ -20,4 +20,5 @@
     <string name="reviews">Reviews</string>
     <string name="videos">Videos</string>
     <string name="go_to_movie">Go to movie</string>
+    <string name="reviews_are_being_loaded">Reviews are being loaded!</string>
 </resources>

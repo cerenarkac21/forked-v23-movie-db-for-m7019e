@@ -8,6 +8,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
@@ -27,11 +28,13 @@ private val moshi = Moshi.Builder()
  * object.
  * Also it enables you to define your own encryption/decryption logic
  */
-fun getLoggerIntercepter(): HttpLoggingInterceptor {
+fun getLoggerInterceptor(): HttpLoggingInterceptor {
     val logging = HttpLoggingInterceptor()
     logging.level = HttpLoggingInterceptor.Level.BODY
     return logging
 }
+
+
 
 /**
  * Refrofit is a HTTP client that will query the API endpoints
@@ -45,13 +48,27 @@ private val movieListRetrofit = Retrofit.Builder()
     .client(
         // to use the intercepter defined above
         OkHttpClient.Builder()
-            .addInterceptor(getLoggerIntercepter())
+            .addInterceptor(getLoggerInterceptor())
             .connectTimeout(20, TimeUnit.SECONDS)
             .readTimeout(20, TimeUnit.SECONDS)
             .build()
     )
     .addConverterFactory(MoshiConverterFactory.create(moshi))
     .baseUrl(SECRETS.MOVIE_LIST_BASE_URL)
+    .build()
+
+private val movieReviewListRetrofit = Retrofit.Builder()
+    // create a client
+    .client(
+        // to use the intercepter defined above
+        OkHttpClient.Builder()
+            .addInterceptor(getLoggerInterceptor())
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .build()
+    )
+    .addConverterFactory(MoshiConverterFactory.create(moshi))
+    .baseUrl(SECRETS.MOVIE_REVIEWS_BASE_URL)
     .build()
 
 
@@ -71,11 +88,26 @@ interface TMDBApiService {
         apiKey: String = SECRETS.API_KEY
     ): MovieResponse
 
-    //@GET()
+    @GET("{movie_id}/reviews")
+    suspend fun getMovieReviews(
+        @Path("movie_id")
+        movieId: Long,
+        @Query("api_key")
+        apiKey: String = SECRETS.API_KEY
+    ): MovieReviewResponse
+
+    /*
+    @GET("videos")
+    suspend fun getMovieVideos(
+        @Query("api_key")
+        apiKey: String = SECRETS.API_KEY
+    ): MovieVideoResponse
+     */
 }
 
 object TMDBApi {
     // initialization will be lazy
     // create the built Retrofit object
     val movieListRetrofitService: TMDBApiService by lazy { movieListRetrofit.create(TMDBApiService::class.java)}
+    val movieReviewListRetrofitService: TMDBApiService by lazy { movieReviewListRetrofit.create(TMDBApiService::class.java)}
 }

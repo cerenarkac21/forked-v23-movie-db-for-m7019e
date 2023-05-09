@@ -19,6 +19,7 @@ abstract class MovieDatabase : RoomDatabase() {
             synchronized(this) {
                 var instance = INSTANCE
 
+                // if the instance (row of data) is new, create it
                 if (instance == null) {
                     instance = Room.databaseBuilder(
                         context.applicationContext,
@@ -29,6 +30,7 @@ abstract class MovieDatabase : RoomDatabase() {
                         .build()
                     INSTANCE = instance
                 }
+                // if the instance (row of data) aldready exists, return it
                 return instance
             }
         }

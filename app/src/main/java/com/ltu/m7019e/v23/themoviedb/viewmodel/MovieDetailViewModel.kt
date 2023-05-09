@@ -23,6 +23,14 @@ class MovieDetailViewModel(
             return _isFavorite
         }
 
+
+    // pass movie info to reviews fragment
+    private val _navigateToMovieVideosAndReviews = MutableLiveData<Movie?>()
+    val navigateToMovieVideosAndReviews: MutableLiveData<Movie?>
+        get() {
+            return _navigateToMovieVideosAndReviews
+        }
+
     init {
         setIsFavorite(movie)
     }
@@ -46,4 +54,12 @@ class MovieDetailViewModel(
             setIsFavorite(movie)
         }
     }
+/*
+    fun onReviewsButtonClicked(movie: Movie){
+        viewModelScope.launch {
+            movieDatabaseDao.
+        }
+    }
+
+ */
 }
