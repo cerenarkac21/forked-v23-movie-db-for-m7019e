@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
@@ -64,7 +65,8 @@
             app:layout_constraintTop_toBottomOf="@+id/author_username_tv" />
 
 
-        <androidx.core.widget.NestedScrollView
+        <ScrollView
+            android:id="@+id/review_content_scroll_view"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
@@ -85,7 +87,7 @@
                 app:layout_constraintStart_toStartOf="@+id/author_avatar_iv"
                 app:layout_constraintTop_toBottomOf="@+id/rating_tv" />
 
-        </androidx.core.widget.NestedScrollView>
+        </ScrollView>
 
         <TextView
             android:id="@+id/rating_tv"
@@ -94,7 +96,7 @@
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="@+id/author_avatar_iv"
             app:layout_constraintTop_toBottomOf="@+id/author_avatar_iv"
-            android:text="@{Html.fromHtml(`&lt;b&gt;Rating: &lt;/b&gt;` + review.authorDetails.rating)}"
+            app:reviewRating="@{review.authorDetails.rating}"
             />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
