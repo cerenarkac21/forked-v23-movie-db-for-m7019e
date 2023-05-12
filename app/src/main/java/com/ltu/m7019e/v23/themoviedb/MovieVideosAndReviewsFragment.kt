@@ -11,11 +11,15 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.PagerSnapHelper
 import com.ltu.m7019e.v23.themoviedb.adapter.MovieReviewListAdapter
 import com.ltu.m7019e.v23.themoviedb.adapter.MovieReviewListClickListener
+import com.ltu.m7019e.v23.themoviedb.adapter.MovieVideoListAdapter
+import com.ltu.m7019e.v23.themoviedb.adapter.MovieVideoListClickListener
 import com.ltu.m7019e.v23.themoviedb.databinding.FragmentMovieVideosAndReviewsBinding
 import com.ltu.m7019e.v23.themoviedb.model.Movie
 import com.ltu.m7019e.v23.themoviedb.network.DataFetchStatus
+import com.ltu.m7019e.v23.themoviedb.utils.CustomLinearLayoutManager
 import com.ltu.m7019e.v23.themoviedb.viewmodel.*
 import kotlinx.coroutines.NonDisposableHandle.parent
 
@@ -24,8 +28,8 @@ class MovieVideosAndReviewsFragment : Fragment() {
     private lateinit var reviewsViewModelFactory: MovieReviewListViewModelFactory
     private lateinit var reviewsViewModel: MovieReviewListViewModel
 
-    //private lateinit var videosViewModel: MovieVideoListViewModel
-    //private lateinit var videosViewModelFactory: MovieVideoListViewModelFactory
+    private lateinit var videosViewModel: MovieVideoListViewModel
+    private lateinit var videosViewModelFactory: MovieVideoListViewModelFactory
 
 
     private var _binding: FragmentMovieVideosAndReviewsBinding? = null
@@ -48,18 +52,46 @@ class MovieVideosAndReviewsFragment : Fragment() {
 
         movie = MovieVideosAndReviewsFragmentArgs.fromBundle(requireArguments()).movie
         val application = requireNotNull(this.activity).application
+
         reviewsViewModelFactory = MovieReviewListViewModelFactory(movie.id, application)
         reviewsViewModel = ViewModelProvider(this, reviewsViewModelFactory).get(MovieReviewListViewModel::class.java)
-        //videosViewModel = MovieVideoListViewModelFactory(movie.id, application)
-        //videosViewModelFactory = ViewModelProvider(this, videosViewModelFactory).get(videosViewModel::class.java)
-        binding.reviewsRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+
+        videosViewModelFactory = MovieVideoListViewModelFactory(movie.id, application)
+        videosViewModel = ViewModelProvider(this, videosViewModelFactory).get(MovieVideoListViewModel::class.java)
+
+        binding.reviewsRecyclerView.layoutManager = CustomLinearLayoutManager(requireContext())
+
         val movieReviewListAdapter = MovieReviewListAdapter(MovieReviewListClickListener { review ->
             reviewsViewModel.onMovieReviewListItemClicked(review)
         })
+
+        val movieVideoListAdapter = MovieVideoListAdapter(MovieVideoListClickListener { video ->
+            videosViewModel.onMovieVideoListItemClicked(video)
+        })
+
+        /* ****************************************
+        *******************************************/
+        val reviewSnapHelper = PagerSnapHelper()
+        reviewSnapHelper.attachToRecyclerView(binding.reviewsRecyclerView)
+
+        val videoSnapHelper = PagerSnapHelper()
+        videoSnapHelper.attachToRecyclerView(binding.videosRecyclerView)
+        /* ****************************************
+        *******************************************/
+
         binding.reviewsRecyclerView.adapter = movieReviewListAdapter
+
         reviewsViewModel.movieReviewList.observe(viewLifecycleOwner) { movieReviewList ->
             movieReviewList?.let {
                 movieReviewListAdapter.submitList(movieReviewList)
+            }
+        }
+
+        binding.videosRecyclerView.adapter = movieVideoListAdapter
+
+        videosViewModel.movieVideoList.observe(viewLifecycleOwner) { movieVideoList ->
+            movieVideoList?.let {
+                movieVideoListAdapter.submitList(movieVideoList)
             }
         }
 
@@ -80,6 +112,25 @@ class MovieVideosAndReviewsFragment : Fragment() {
                 }
             }
         }
+
+        videosViewModel.dataFetchStatus.observe(viewLifecycleOwner) { status ->
+            status?.let {
+                when (status) {
+                    DataFetchStatus.LOADING -> {
+                        binding.statusImageVideos.visibility = View.VISIBLE
+                        binding.statusImageVideos.setImageResource(R.drawable.loading_animation)
+                    }
+                    DataFetchStatus.ERROR -> {
+                        binding.statusImageVideos.visibility = View.VISIBLE
+                        binding.statusImageVideos.setImageResource(R.drawable.ic_connection_error)
+                    }
+                    DataFetchStatus.DONE -> {
+                        binding.statusImageVideos.visibility = View.GONE
+                    }
+                }
+            }
+        }
+
         return binding.root
     }
 

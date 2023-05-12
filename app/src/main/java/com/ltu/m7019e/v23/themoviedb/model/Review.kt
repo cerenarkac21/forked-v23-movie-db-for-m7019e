@@ -13,7 +13,7 @@ import java.util.*
 data class Review(
     //@PrimaryKey()
     @Json(name = "id")
-    var id: Long = 0L,
+    var id: String,
 
     //@ColumnInfo(name = "author")
     @Json(name = "author")
@@ -29,11 +29,11 @@ data class Review(
 
     //@ColumnInfo(name = "created_at")
     @Json(name = "created_at")
-    var createdAt: Date,
+    var createdAt: String,
 
     //@ColumnInfo(name = "updated_at")
     @Json(name = "updated_at")
-    var updatedAt: Date,
+    var updatedAt: String,
 
     //@ColumnInfo(name = "url")
     @Json(name = "url")

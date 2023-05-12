@@ -1,5 +1,10 @@
 package com.ltu.m7019e.v23.themoviedb.utils
 
+import android.graphics.Color
+import android.webkit.WebResourceError
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -56,4 +61,47 @@ fun bindReviewRating(textView: TextView, double: Double){
         val formattedRating = decimalFormat.format(double)
         textView.text = formattedRating
     }
+}
+
+@BindingAdapter("movieVideoUrl")
+fun bindMovieVideoUrl(webView: WebView, key: String) {
+    val movieVideoUrl = "https://www.youtube.com/embed/$key"
+
+    webView.settings.apply {
+        javaScriptEnabled = true
+    }
+
+    webView.setBackgroundColor(Color.TRANSPARENT)
+
+    webView.webViewClient = object : WebViewClient() {
+        override fun onPageFinished(view: WebView?, url: String?) {
+            super.onPageFinished(view, url)
+
+            if (movieVideoUrlIsValid(url)) {
+                val html = "<iframe width=\"100%\" height=\"100%\" src=\"$movieVideoUrl\" frameBorder=\"0\" allowFullScreen></iframe>"
+                webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
+            } else {
+                // Handle the case when the video is unavailable or deleted
+                webView.loadUrl("about:blank") // Clear the WebView content
+                // Show an error message or perform any other necessary actions
+            }
+        }
+
+        override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+            super.onReceivedError(view, request, error)
+
+            // Handle WebView loading errors
+            webView.loadUrl("about:blank") // Clear the WebView content
+            // Show an error message or perform any other necessary actions
+        }
+    }
+
+    webView.loadUrl(movieVideoUrl)
+}
+
+private fun movieVideoUrlIsValid(url: String?): Boolean {
+    // Perform validation checks on the URL or handle specific error conditions
+    // Return true if the video URL is considered valid, false otherwise
+    // You can customize the validation logic based on your requirements
+    return url != null && !url.startsWith("https://www.youtube.com/error_")
 }

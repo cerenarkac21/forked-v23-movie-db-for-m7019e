@@ -23,6 +23,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:scrollbars="horizontal"
+            android:orientation="vertical"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintBottom_toTopOf="@id/go_to_movie_detail_button"
             app:layout_constraintTop_toBottomOf="@id/reviewsRecyclerView"

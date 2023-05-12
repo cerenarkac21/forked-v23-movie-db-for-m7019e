@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+        name = "video"
+        type = "com.ltu.m7019e.v23.themoviedb.model.Video" />
+
+        <variable
+            name = "clickListener"
+            type = "com.ltu.m7019e.v23.themoviedb.adapter.MovieVideoListClickListener" />
+
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/movie_video_list_item_cl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:onClick="@{ () -> clickListener.onClick(video)}">
+
+        <WebView
+            android:id="@+id/movie_video_list_item_web_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hardwareAccelerated="true"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:movieVideoUrl="@{video.key}"/>
+
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

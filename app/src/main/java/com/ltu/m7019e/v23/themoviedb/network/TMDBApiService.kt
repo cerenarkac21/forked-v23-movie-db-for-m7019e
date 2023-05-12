@@ -71,6 +71,20 @@ private val movieReviewListRetrofit = Retrofit.Builder()
     .baseUrl(SECRETS.MOVIE_REVIEWS_BASE_URL)
     .build()
 
+private val movieVideoListRetrofit = Retrofit.Builder()
+    // create a client
+    .client(
+        // to use the intercepter defined above
+        OkHttpClient.Builder()
+            .addInterceptor(getLoggerInterceptor())
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .build()
+    )
+    .addConverterFactory(MoshiConverterFactory.create(moshi))
+    .baseUrl(SECRETS.MOVIE_VIDEOS_BASE_URL)
+    .build()
+
 
 // create the main interface that defines TMDBApiService
 interface TMDBApiService {
@@ -96,13 +110,13 @@ interface TMDBApiService {
         apiKey: String = SECRETS.API_KEY
     ): MovieReviewResponse
 
-    /*
-    @GET("videos")
+    @GET("{movie_id}/videos")
     suspend fun getMovieVideos(
+        @Path("movie_id")
+        movieId: Long,
         @Query("api_key")
         apiKey: String = SECRETS.API_KEY
     ): MovieVideoResponse
-     */
 }
 
 object TMDBApi {
@@ -110,4 +124,5 @@ object TMDBApi {
     // create the built Retrofit object
     val movieListRetrofitService: TMDBApiService by lazy { movieListRetrofit.create(TMDBApiService::class.java)}
     val movieReviewListRetrofitService: TMDBApiService by lazy { movieReviewListRetrofit.create(TMDBApiService::class.java)}
+    val movieVideoListRetrofitService: TMDBApiService by lazy { movieVideoListRetrofit.create(TMDBApiService::class.java)}
 }
