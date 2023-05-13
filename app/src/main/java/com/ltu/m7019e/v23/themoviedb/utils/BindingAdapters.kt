@@ -14,50 +14,42 @@ import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 @BindingAdapter("posterImageUrl")
-fun bindPosterImage(imgView: ImageView, imgUrl:String) {
+fun bindPosterImage(imgView: ImageView, imgUrl: String) {
     imgUrl.let { posterPath ->
         Glide
             .with(imgView)
             .load(SECRETS.POSTER_IMAGE_BASE_URL + SECRETS.POSTER_IMAGE_WIDTH + posterPath)
-            .into(imgView);
+            .into(imgView)
     }
 }
 
 @BindingAdapter("backdropImageUrl")
-fun bindBackdropImage(imgView: ImageView, imgUrl:String) {
+fun bindBackdropImage(imgView: ImageView, imgUrl: String) {
     imgUrl.let { backdropPath ->
         Glide
             .with(imgView)
             .load(SECRETS.BACKDROP_IMAGE_BASE_URL + SECRETS.BACKDROP_IMAGE_WIDTH + backdropPath)
-            .into(imgView);
+            .into(imgView)
     }
 }
 
 @BindingAdapter("reviewAuthorAvatarUrl")
-fun bindAuthorAvatarImage(imgView: ImageView, imgUrl: String){
-    imgUrl.let{ avatarPath ->
-        Glide
-            .with(imgView)
-            .load(SECRETS.POSTER_IMAGE_BASE_URL + SECRETS.POSTER_IMAGE_WIDTH + avatarPath)
-            .into(imgView);
+fun bindAuthorAvatarImage(imgView: ImageView, imgUrl: String) {
+    var avatarPath = imgUrl
+    if (imgUrl.startsWith("/https://secure.gravatar.com/avatar")) {
+        avatarPath = imgUrl.substring(1)
+    } else {
+        avatarPath = "https://secure.gravatar.com/avatar$avatarPath"
     }
-}
-
-@BindingAdapter("reviewUpdate")
-fun bindReviewUpdate(textView: TextView, date: Date){
-    date.let{
-        val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
-        val formattedDate = dateFormat.format(date)
-        textView.text = formattedDate
-
-    }
+    Glide.with(imgView).load(avatarPath).into(imgView)
 }
 
 
 @BindingAdapter("reviewRating")
-fun bindReviewRating(textView: TextView, double: Double){
-    double.let{
+fun bindReviewRating(textView: TextView, double: Double) {
+    double.let {
         val decimalFormat = DecimalFormat("#.#")
         val formattedRating = decimalFormat.format(double)
         textView.text = formattedRating
@@ -79,7 +71,8 @@ fun bindMovieVideoUrl(webView: WebView, key: String) {
             super.onPageFinished(view, url)
 
             if (movieVideoUrlIsValid(url)) {
-                val html = "<iframe width=\"100%\" height=\"100%\" src=\"$movieVideoUrl\" frameBorder=\"0\" allowFullScreen></iframe>"
+                val html =
+                    "<iframe width=\"100%\" height=\"100%\" src=\"$movieVideoUrl\" frameBorder=\"0\" allowFullScreen></iframe>"
                 webView.loadDataWithBaseURL(null, html, "text/html", "UTF-8", null)
             } else {
                 // Handle the case when the video is unavailable or deleted
@@ -88,7 +81,11 @@ fun bindMovieVideoUrl(webView: WebView, key: String) {
             }
         }
 
-        override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+        override fun onReceivedError(
+            view: WebView?,
+            request: WebResourceRequest?,
+            error: WebResourceError?
+        ) {
             super.onReceivedError(view, request, error)
 
             // Handle WebView loading errors
@@ -96,7 +93,10 @@ fun bindMovieVideoUrl(webView: WebView, key: String) {
             // Show an error message or perform any other necessary actions
         }
 
-        override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+        override fun shouldOverrideUrlLoading(
+            view: WebView?,
+            request: WebResourceRequest?
+        ): Boolean {
             val intent = Intent(Intent.ACTION_VIEW, request?.url)
             val chooserIntent = Intent.createChooser(intent, "Open with")
 
