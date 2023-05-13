@@ -1,5 +1,6 @@
 package com.ltu.m7019e.v23.themoviedb.utils
 
+import android.content.Intent
 import android.graphics.Color
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
@@ -38,7 +39,7 @@ fun bindAuthorAvatarImage(imgView: ImageView, imgUrl: String){
     imgUrl.let{ avatarPath ->
         Glide
             .with(imgView)
-            .load(avatarPath)
+            .load(SECRETS.POSTER_IMAGE_BASE_URL + SECRETS.POSTER_IMAGE_WIDTH + avatarPath)
             .into(imgView);
     }
 }
@@ -93,6 +94,18 @@ fun bindMovieVideoUrl(webView: WebView, key: String) {
             // Handle WebView loading errors
             webView.loadUrl("about:blank") // Clear the WebView content
             // Show an error message or perform any other necessary actions
+        }
+
+        override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
+            val intent = Intent(Intent.ACTION_VIEW, request?.url)
+            val chooserIntent = Intent.createChooser(intent, "Open with")
+
+            if (intent.resolveActivity(webView.context.packageManager) != null) {
+                webView.context.startActivity(chooserIntent)
+                return true
+            }
+
+            return super.shouldOverrideUrlLoading(view, request)
         }
     }
 

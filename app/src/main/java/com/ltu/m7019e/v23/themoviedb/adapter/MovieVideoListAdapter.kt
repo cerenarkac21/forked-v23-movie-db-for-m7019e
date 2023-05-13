@@ -1,7 +1,11 @@
 package com.ltu.m7019e.v23.themoviedb.adapter
 
+import android.content.Intent
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebResourceRequest
+import android.webkit.WebView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.ltu.m7019e.v23.themoviedb.model.Video
