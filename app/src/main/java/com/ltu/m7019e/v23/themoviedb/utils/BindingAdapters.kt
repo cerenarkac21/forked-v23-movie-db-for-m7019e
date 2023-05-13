@@ -77,7 +77,6 @@ fun bindMovieVideoUrl(webView: WebView, key: String) {
             } else {
                 // Handle the case when the video is unavailable or deleted
                 webView.loadUrl("about:blank") // Clear the WebView content
-                // Show an error message or perform any other necessary actions
             }
         }
 
@@ -90,7 +89,6 @@ fun bindMovieVideoUrl(webView: WebView, key: String) {
 
             // Handle WebView loading errors
             webView.loadUrl("about:blank") // Clear the WebView content
-            // Show an error message or perform any other necessary actions
         }
 
         override fun shouldOverrideUrlLoading(
@@ -115,6 +113,5 @@ fun bindMovieVideoUrl(webView: WebView, key: String) {
 private fun movieVideoUrlIsValid(url: String?): Boolean {
     // Perform validation checks on the URL or handle specific error conditions
     // Return true if the video URL is considered valid, false otherwise
-    // You can customize the validation logic based on your requirements
     return url != null && !url.startsWith("https://www.youtube.com/error_")
 }

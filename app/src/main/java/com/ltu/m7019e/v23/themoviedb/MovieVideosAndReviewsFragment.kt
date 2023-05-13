@@ -58,7 +58,9 @@ class MovieVideosAndReviewsFragment : Fragment() {
         videosViewModelFactory = MovieVideoListViewModelFactory(movie.id, application)
         videosViewModel = ViewModelProvider(this, videosViewModelFactory).get(MovieVideoListViewModel::class.java)
 
+        // enable right-to-left scrolling instead of bottom-to-top scrolling
         binding.reviewsRecyclerView.layoutManager = CustomLinearLayoutManager(requireContext())
+        binding.videosRecyclerView.layoutManager = CustomLinearLayoutManager(requireContext())
 
         val movieReviewListAdapter = MovieReviewListAdapter(MovieReviewListClickListener { review ->
             reviewsViewModel.onMovieReviewListItemClicked(review)
@@ -68,15 +70,12 @@ class MovieVideosAndReviewsFragment : Fragment() {
             videosViewModel.onMovieVideoListItemClicked(video)
         })
 
-        /* ****************************************
-        *******************************************/
+        // add those to make the recycler view show one item fully at each scrolling
         val reviewSnapHelper = PagerSnapHelper()
         reviewSnapHelper.attachToRecyclerView(binding.reviewsRecyclerView)
 
         val videoSnapHelper = PagerSnapHelper()
         videoSnapHelper.attachToRecyclerView(binding.videosRecyclerView)
-        /* ****************************************
-        *******************************************/
 
         binding.reviewsRecyclerView.adapter = movieReviewListAdapter
 
@@ -94,6 +93,8 @@ class MovieVideosAndReviewsFragment : Fragment() {
             }
         }
 
+
+        // observe the success of api calls and show loading icon or connection icon if the response is failed
         reviewsViewModel.dataFetchStatus.observe(viewLifecycleOwner) { status ->
             status?.let {
                 when (status) {

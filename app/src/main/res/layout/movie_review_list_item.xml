@@ -24,24 +24,15 @@
 
 
         <TextView
-            android:id="@+id/author_tv"
+            android:id="@+id/rating_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="12dp"
             android:layout_marginTop="12dp"
-            android:text="@{review.author}"
+            android:text='@{"Rating: " + review.authorDetails.rating}'
             app:layout_constraintStart_toEndOf="@+id/author_avatar_iv"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <TextView
-            android:id="@+id/author_username_tv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:layout_marginTop="12dp"
-            android:text="@{review.authorDetails.username}"
-            app:layout_constraintStart_toEndOf="@+id/author_avatar_iv"
-            app:layout_constraintTop_toBottomOf="@+id/author_tv" />
 
         <ImageView
             android:id="@+id/author_avatar_iv"
@@ -57,33 +48,41 @@
         <ScrollView
             android:id="@+id/review_content_scroll_view"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_marginTop="24dp"
+            android:fillViewport="true"
             android:nestedScrollingEnabled="false"
             android:orientation="vertical"
+
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toEndOf="@+id/author_avatar_iv"
-            app:layout_constraintTop_toBottomOf="@+id/author_username_tv">
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.038">
 
             <TextView
                 android:id="@+id/content_tv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:text="@{review.content}"
-                app:layout_constraintStart_toStartOf="@+id/author_avatar_iv"
-                app:layout_constraintTop_toBottomOf="@+id/rating_tv" />
+                android:layout_marginBottom="8dp"
+                android:text='@{"Review: " + review.content}'
+                app:layout_constraintBottom_toBottomOf="@id/review_content_scroll_view"
+                app:layout_constraintEnd_toEndOf="@id/review_content_scroll_view"
+                app:layout_constraintStart_toStartOf="@+id/review_content_scroll_view"
+                app:layout_constraintTop_toBottomOf="@+id/review_content_scroll_view" />
 
         </ScrollView>
 
         <TextView
-            android:id="@+id/rating_tv"
+            android:id="@+id/author_username_tv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:text="@{review.authorDetails.username}"
             app:layout_constraintStart_toStartOf="@+id/author_avatar_iv"
-            app:layout_constraintTop_toBottomOf="@+id/author_avatar_iv"
-            app:reviewRating="@{review.authorDetails.rating}"
-            />
+            app:layout_constraintTop_toBottomOf="@+id/author_avatar_iv" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
