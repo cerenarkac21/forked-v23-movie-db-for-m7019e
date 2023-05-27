@@ -18,6 +18,7 @@ import com.ltu.m7019e.v23.themoviedb.adapter.MovieVideoListClickListener
 import com.ltu.m7019e.v23.themoviedb.databinding.FragmentMovieVideosAndReviewsBinding
 import com.ltu.m7019e.v23.themoviedb.model.Movie
 import com.ltu.m7019e.v23.themoviedb.network.DataFetchStatus
+import com.ltu.m7019e.v23.themoviedb.network.NetworkStatusCallback
 import com.ltu.m7019e.v23.themoviedb.utils.CustomLinearLayoutManager
 import com.ltu.m7019e.v23.themoviedb.viewmodel.*
 
@@ -30,6 +31,7 @@ class MovieVideosAndReviewsFragment : Fragment() {
     private lateinit var videosViewModel: MovieVideoListViewModel
     private lateinit var videosViewModelFactory: MovieVideoListViewModelFactory
 
+    private lateinit var networkStatusCallback: NetworkStatusCallback
 
     private var _binding: FragmentMovieVideosAndReviewsBinding? = null
     private val binding get() = _binding!!
@@ -50,13 +52,26 @@ class MovieVideosAndReviewsFragment : Fragment() {
         _binding = FragmentMovieVideosAndReviewsBinding.inflate(inflater)
 
         movie = MovieVideosAndReviewsFragmentArgs.fromBundle(requireArguments()).movie
+        val container = TheMovieDataBase.getContainer(requireContext())
+        val movieRepository = container.moviesRepository
         val application = requireNotNull(this.activity).application
 
-        reviewsViewModelFactory = MovieReviewListViewModelFactory(movie.id, application)
-        reviewsViewModel = ViewModelProvider(this, reviewsViewModelFactory).get(MovieReviewListViewModel::class.java)
+        reviewsViewModelFactory =
+            MovieReviewListViewModelFactory(movie.id, application, movieRepository)
+        reviewsViewModel = ViewModelProvider(
+            this,
+            reviewsViewModelFactory
+        ).get(MovieReviewListViewModel::class.java)
 
-        videosViewModelFactory = MovieVideoListViewModelFactory(movie.id, application)
-        videosViewModel = ViewModelProvider(this, videosViewModelFactory).get(MovieVideoListViewModel::class.java)
+        videosViewModelFactory =
+            MovieVideoListViewModelFactory(movie.id, application, movieRepository)
+        videosViewModel =
+            ViewModelProvider(this, videosViewModelFactory).get(MovieVideoListViewModel::class.java)
+
+        // Initialize the network status callback
+        networkStatusCallback = NetworkStatusCallback(application, movieRepository)
+        networkStatusCallback.registerNetworkCallback()
+
 
         binding.reviewsRecyclerView.layoutManager = CustomLinearLayoutManager(requireContext())
 
@@ -68,15 +83,11 @@ class MovieVideosAndReviewsFragment : Fragment() {
             videosViewModel.onMovieVideoListItemClicked(video)
         })
 
-        /* ****************************************
-        *******************************************/
         val reviewSnapHelper = PagerSnapHelper()
         reviewSnapHelper.attachToRecyclerView(binding.reviewsRecyclerView)
 
         val videoSnapHelper = PagerSnapHelper()
         videoSnapHelper.attachToRecyclerView(binding.videosRecyclerView)
-        /* ****************************************
-        *******************************************/
 
         binding.reviewsRecyclerView.adapter = movieReviewListAdapter
 
@@ -172,5 +183,11 @@ class MovieVideosAndReviewsFragment : Fragment() {
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Unregister the network status callback
+        networkStatusCallback.unregisterNetworkCallback()
     }
 }

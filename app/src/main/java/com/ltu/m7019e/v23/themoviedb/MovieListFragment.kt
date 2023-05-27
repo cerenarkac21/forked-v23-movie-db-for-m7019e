@@ -13,10 +13,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ltu.m7019e.v23.themoviedb.adapter.MovieListAdapter
 import com.ltu.m7019e.v23.themoviedb.adapter.MovieListClickListener
-import com.ltu.m7019e.v23.themoviedb.database.MovieDatabase
-import com.ltu.m7019e.v23.themoviedb.database.MovieDatabaseDao
 import com.ltu.m7019e.v23.themoviedb.databinding.FragmentMovieListBinding
 import com.ltu.m7019e.v23.themoviedb.network.DataFetchStatus
+import com.ltu.m7019e.v23.themoviedb.network.NetworkStatusCallback
 import com.ltu.m7019e.v23.themoviedb.viewmodel.MovieListViewModel
 import com.ltu.m7019e.v23.themoviedb.viewmodel.MovieListViewModelFactory
 
@@ -26,8 +25,7 @@ import com.ltu.m7019e.v23.themoviedb.viewmodel.MovieListViewModelFactory
 class MovieListFragment : Fragment() {
     private lateinit var viewModel: MovieListViewModel
     private lateinit var viewModelFactory: MovieListViewModelFactory
-
-    private lateinit var movieDatabaseDao: MovieDatabaseDao
+    private lateinit var networkStatusCallback: NetworkStatusCallback
 
     private var _binding: FragmentMovieListBinding? = null;
     private val binding get() = _binding!!
@@ -39,18 +37,25 @@ class MovieListFragment : Fragment() {
         // Inflate the layout for this fragment
         _binding = FragmentMovieListBinding.inflate(inflater)
 
+        val container = TheMovieDataBase.getContainer(requireContext())
+        val movieRepository = container.moviesRepository
         val application = requireNotNull(this.activity).application
-        movieDatabaseDao = MovieDatabase.getInstance(application).movieDatabaseDao
 
-        viewModelFactory = MovieListViewModelFactory(movieDatabaseDao, application)
-        viewModel = ViewModelProvider(this, viewModelFactory).get(MovieListViewModel::class.java)
+        viewModelFactory = MovieListViewModelFactory(movieRepository, application)
+        viewModel = ViewModelProvider(this, viewModelFactory)[MovieListViewModel::class.java]
+
+        // Initialize the network status callback
+        networkStatusCallback = NetworkStatusCallback(application, movieRepository)
+        networkStatusCallback.registerNetworkCallback()
+
+
+        // set the layout manager as grid layout manager
+        binding.movieListRv.layoutManager = GridLayoutManager(context, 4)
 
         val movieListAdapter = MovieListAdapter(
             MovieListClickListener { movie ->
                 viewModel.onMovieListItemClicked(movie)
             })
-        // set the layout manager as grid layout manager
-        binding.movieListRv.layoutManager = GridLayoutManager(context, 4)
         binding.movieListRv.adapter = movieListAdapter
         viewModel.movieList.observe(viewLifecycleOwner) { movieList ->
             movieList?.let {
@@ -87,7 +92,6 @@ class MovieListFragment : Fragment() {
 
         return binding.root
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val toolbar = requireActivity().findViewById<Toolbar>(R.id.toolbar)
@@ -131,6 +135,12 @@ class MovieListFragment : Fragment() {
                 return true
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        // Unregister the network status callback
+        networkStatusCallback.unregisterNetworkCallback()
     }
 }
 

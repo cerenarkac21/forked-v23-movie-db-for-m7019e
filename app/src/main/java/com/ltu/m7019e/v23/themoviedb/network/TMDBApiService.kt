@@ -1,5 +1,10 @@
 package com.ltu.m7019e.v23.themoviedb.network
 
+import android.content.Context
+import com.ltu.m7019e.v23.themoviedb.database.MovieDatabase
+import com.ltu.m7019e.v23.themoviedb.database.MovieDatabaseDao
+import com.ltu.m7019e.v23.themoviedb.repository.MoviesRepository
+import com.ltu.m7019e.v23.themoviedb.repository.MoviesRepositoryImpl
 import com.ltu.m7019e.v23.themoviedb.utils.SECRETS
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -12,79 +17,69 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
-/**
- * Build the Moshi object that Retrofit will be using, making sure to add the Kotlin adapter for
- * full Kotlin compatibility.
- * (JSON to Kotlin mapper)
- */
-private val moshi = Moshi.Builder()
-    // use the built-in adapter factory to map the JSON into your classes
-    .add(KotlinJsonAdapterFactory())
-    .build()
-
-
-/**
- * Add a httpclient logger for debugging purpose
- * object.
- * Also it enables you to define your own encryption/decryption logic
- */
-fun getLoggerInterceptor(): HttpLoggingInterceptor {
-    val logging = HttpLoggingInterceptor()
-    logging.level = HttpLoggingInterceptor.Level.BODY
-    return logging
+interface AppContainer {
+    val moviesRepository : MoviesRepository
+    val movieDatabaseDao : MovieDatabaseDao
 }
+class AppContainerImpl (context: Context): AppContainer {
+
+    private val movieDatabase = MovieDatabase.getInstance(context)
+
+    override val movieDatabaseDao: MovieDatabaseDao
+        get() = movieDatabase.movieDatabaseDao
+    /**
+     * Build the Moshi object that Retrofit will be using, making sure to add the Kotlin adapter for
+     * full Kotlin compatibility.
+     * (JSON to Kotlin mapper)
+     */
+    private val moshi = Moshi.Builder()
+        // use the built-in adapter factory to map the JSON into your classes
+        .add(KotlinJsonAdapterFactory())
+        .build()
 
 
+    /**
+     * Add a httpclient logger for debugging purpose
+     * object.
+     * Also it enables you to define your own encryption/decryption logic
+     */
+    fun getLoggerInterceptor(): HttpLoggingInterceptor {
+        val logging = HttpLoggingInterceptor()
+        logging.level = HttpLoggingInterceptor.Level.BODY
+        return logging
+    }
 
-/**
- * Refrofit is a HTTP client that will query the API endpoints
- * Moshi will parse JSON objects to Kotlin objects
- * Use the Retrofit builder to build a retrofit object using a Moshi converter with our Moshi
- * object.
- */
+    /**
+     * Refrofit is a HTTP client that will query the API endpoints
+     * Moshi will parse JSON objects to Kotlin objects
+     * Use the Retrofit builder to build a retrofit object using a Moshi converter with our Moshi
+     * object.
+     */
 
-private val movieListRetrofit = Retrofit.Builder()
-    // create a client
-    .client(
-        // to use the intercepter defined above
-        OkHttpClient.Builder()
-            .addInterceptor(getLoggerInterceptor())
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS)
-            .build()
-    )
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .baseUrl(SECRETS.MOVIE_LIST_BASE_URL)
-    .build()
+    private val retrofit = Retrofit.Builder()
+        // create a client
+        .client(
+            // to use the intercepter defined above
+            OkHttpClient.Builder()
+                .addInterceptor(getLoggerInterceptor())
+                .connectTimeout(20, TimeUnit.SECONDS)
+                .readTimeout(20, TimeUnit.SECONDS)
+                .build()
+        )
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .baseUrl(SECRETS.MOVIE_LIST_BASE_URL)
+        .build()
 
-private val movieReviewListRetrofit = Retrofit.Builder()
-    // create a client
-    .client(
-        // to use the intercepter defined above
-        OkHttpClient.Builder()
-            .addInterceptor(getLoggerInterceptor())
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS)
-            .build()
-    )
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .baseUrl(SECRETS.MOVIE_REVIEWS_BASE_URL)
-    .build()
 
-private val movieVideoListRetrofit = Retrofit.Builder()
-    // create a client
-    .client(
-        // to use the intercepter defined above
-        OkHttpClient.Builder()
-            .addInterceptor(getLoggerInterceptor())
-            .connectTimeout(20, TimeUnit.SECONDS)
-            .readTimeout(20, TimeUnit.SECONDS)
-            .build()
-    )
-    .addConverterFactory(MoshiConverterFactory.create(moshi))
-    .baseUrl(SECRETS.MOVIE_VIDEOS_BASE_URL)
-    .build()
+    private val retrofitService: TMDBApiService by lazy {
+        retrofit.create(TMDBApiService::class.java)
+    }
 
+    override val moviesRepository : MoviesRepository by lazy {
+        MoviesRepositoryImpl(retrofitService, movieDatabaseDao)
+    }
+
+}
 
 // create the main interface that defines TMDBApiService
 interface TMDBApiService {
@@ -117,12 +112,4 @@ interface TMDBApiService {
         @Query("api_key")
         apiKey: String = SECRETS.API_KEY
     ): MovieVideoResponse
-}
-
-object TMDBApi {
-    // initialization will be lazy
-    // create the built Retrofit object
-    val movieListRetrofitService: TMDBApiService by lazy { movieListRetrofit.create(TMDBApiService::class.java)}
-    val movieReviewListRetrofitService: TMDBApiService by lazy { movieReviewListRetrofit.create(TMDBApiService::class.java)}
-    val movieVideoListRetrofitService: TMDBApiService by lazy { movieVideoListRetrofit.create(TMDBApiService::class.java)}
 }

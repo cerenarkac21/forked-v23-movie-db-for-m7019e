@@ -1,12 +1,9 @@
 package com.ltu.m7019e.v23.themoviedb.model
 
 import android.os.Parcelable
-import androidx.room.ColumnInfo
 import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
-import java.util.*
 
 @Parcelize
 @Entity(tableName = "videos")
@@ -51,5 +48,5 @@ data class Video(
     @Json(name = "id")
     var id: String
 
-): Parcelable
+) : Parcelable
 
