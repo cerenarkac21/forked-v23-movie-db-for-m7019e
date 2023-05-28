@@ -77,10 +77,9 @@ class MovieListViewModel(private val moviesRepository: MoviesRepository, applica
     }
 
     fun getSavedMovies() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             val movies = moviesRepository.getSavedMovies()
             _movieList.value = movies
-            _movieList.postValue(movies)
         }
     }
 }

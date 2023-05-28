@@ -7,11 +7,11 @@ import androidx.room.PrimaryKey
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@Entity(tableName = "top_rated_movies")
-data class TopRatedMovie(
+@Entity(tableName = "saved_movies")
+data class SavedMovie(
     @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "top_rated_movie_id")
-    var topRatedMovieId: Long = 0L,
+    @ColumnInfo(name = "saved_movie_id")
+    var savedMovieId: Long = 0L,
 
     @ColumnInfo(name = "id")
     var movieId: Long = 0L

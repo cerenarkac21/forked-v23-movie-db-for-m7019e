@@ -5,8 +5,8 @@ import com.ltu.m7019e.v23.themoviedb.network.TMDBApiService
 import timber.log.Timber
 
 interface  MoviesRepository {
-    suspend fun getPopularMovies(): List<Movie>?
-    suspend fun getTopRatedMovies(): List<Movie>?
+    suspend fun getPopularMovies(): List<Movie>
+    suspend fun getTopRatedMovies(): List<Movie>
     suspend fun getMovieReviews(movieId: Long): List<Review>
     suspend fun getMovieVideos(movieId: Long): List<Video>
     suspend fun getSavedMovies(): List<Movie>
@@ -18,24 +18,25 @@ class MoviesRepositoryImpl (
     private val movieDatabaseDao: MovieDatabaseDao
 
     ): MoviesRepository {
-    override suspend fun getTopRatedMovies(): List<Movie>? {
-        try {
+    override suspend fun getTopRatedMovies(): List<Movie> {
+        return try {
+            Timber.tag("TOP_RATED_MOVIES_FROM_REPO").d("you have NETWORK CONNECTION")
             // Fetch data from the network
             val topRatedMovies = apiService.getTopRatedMovies().results
             // Update the local cache with the fetched data
             movieDatabaseDao.clearTopRatedMovies()
             topRatedMovies.forEach {movie ->
-                movieDatabaseDao.insertTopRatedMovie(TopRatedMovie(id = movie.id))
+                movieDatabaseDao.insertTopRatedMovie(TopRatedMovie(movieId = movie.id))
             }
-            return topRatedMovies
+            topRatedMovies
         } catch (exception: Exception){
             Timber.tag("TOP_RATED_MOVIES_FROM_REPO").d("NO NETWORK CONNECTION, USE LOCAL DATA")
+            movieDatabaseDao.getTopRatedMovies()
         }
-        return movieDatabaseDao.getTopRatedMovies()
     }
 
-    override suspend fun getPopularMovies(): List<Movie>? {
-        try {
+    override suspend fun getPopularMovies(): List<Movie> {
+        return try {
             // Fetch data from the network
             val popularMovies = apiService.getPopularMovies().results
             // Update the local cache with the fetched data
@@ -46,8 +47,8 @@ class MoviesRepositoryImpl (
             return popularMovies
         } catch (exception: Exception){
             Timber.tag("POPULAR_MOVIES_FROM_REPO").d("NO NETWORK CONNECTION, USE LOCAL DATA")
+            movieDatabaseDao.getPopularMovies()
         }
-        return movieDatabaseDao.getPopularMovies()
     }
 
     override suspend fun getMovieReviews(movieId: Long): List<Review> {
@@ -59,8 +60,10 @@ class MoviesRepositoryImpl (
     }
 
     override suspend fun getSavedMovies(): List<Movie> {
-        return movieDatabaseDao.getAllMovies()
+        return movieDatabaseDao.getSavedMovies()
     }
+
+
 
 
 }

@@ -1,6 +1,7 @@
 package com.ltu.m7019e.v23.themoviedb
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -13,11 +14,17 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ltu.m7019e.v23.themoviedb.adapter.MovieListAdapter
 import com.ltu.m7019e.v23.themoviedb.adapter.MovieListClickListener
+import com.ltu.m7019e.v23.themoviedb.database.MovieDatabase
 import com.ltu.m7019e.v23.themoviedb.databinding.FragmentMovieListBinding
+import com.ltu.m7019e.v23.themoviedb.model.Movie
 import com.ltu.m7019e.v23.themoviedb.network.DataFetchStatus
 import com.ltu.m7019e.v23.themoviedb.network.NetworkStatusCallback
 import com.ltu.m7019e.v23.themoviedb.viewmodel.MovieListViewModel
 import com.ltu.m7019e.v23.themoviedb.viewmodel.MovieListViewModelFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.MainScope
+import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
@@ -26,6 +33,8 @@ class MovieListFragment : Fragment() {
     private lateinit var viewModel: MovieListViewModel
     private lateinit var viewModelFactory: MovieListViewModelFactory
     private lateinit var networkStatusCallback: NetworkStatusCallback
+    //private val coroutineScope: CoroutineScope by lazy { MainScope() }
+
 
     private var _binding: FragmentMovieListBinding? = null;
     private val binding get() = _binding!!
@@ -126,7 +135,14 @@ class MovieListFragment : Fragment() {
                         viewModel.getPopularMovies()
                     }
                     R.id.action_load_top_rated_movies -> {
+                        /*
+                        coroutineScope.launch {
+                            viewTopRatedMoviesTable()
+                        }
+
+                         */
                         viewModel.getTopRatedMovies()
+
                     }
                     R.id.action_load_saved_movies -> {
                         viewModel.getSavedMovies()
@@ -142,5 +158,17 @@ class MovieListFragment : Fragment() {
         // Unregister the network status callback
         networkStatusCallback.unregisterNetworkCallback()
     }
-}
+/*
+    suspend fun viewTopRatedMoviesTable(){
+        val movieDatabase = MovieDatabase.getInstance(requireContext())
+        val movieDao = movieDatabase.movieDatabaseDao
+        val movies: List<Movie> = movieDao.getTopRatedMovies()
+        for (movie in movies) {
+            Timber.tag("MovieData").d("Title: " + movie.title)
 
+        }
+
+    }
+
+ */
+}
