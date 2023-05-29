@@ -8,7 +8,7 @@ import com.ltu.m7019e.v23.themoviedb.model.TopRatedMovie
 
 @Dao
 interface MovieDatabaseDao {
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(movie: Movie)
 
     @Delete
@@ -23,8 +23,8 @@ interface MovieDatabaseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSavedMovie(savedMovie: SavedMovie)
 
-    @Delete
-    suspend fun deleteSavedMovie(savedMovie: SavedMovie)
+    @Query("DELETE FROM saved_movies WHERE saved_movies.id = :id")
+    suspend fun deleteSavedMovie(id: Long)
 
     @Query("DELETE FROM top_rated_movies")
     suspend fun clearTopRatedMovies()
@@ -44,7 +44,7 @@ interface MovieDatabaseDao {
     @Query("SELECT * from movies ORDER BY id ASC")
     suspend fun getAllMovies(): List<Movie>
 
-    @Query("SELECT EXISTS(SELEcT * from movies WHERE id = :id)")
+    @Query("SELECT EXISTS(SELECT * from movies INNER JOIN saved_movies ON movies.id WHERE saved_movies.id = :id)")
     suspend fun isFavorite(id: Long): Boolean
 
 }

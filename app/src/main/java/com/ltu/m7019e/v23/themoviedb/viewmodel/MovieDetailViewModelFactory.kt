@@ -19,13 +19,3 @@ class MovieDetailViewModelFactory(private val movieDatabaseDao: MovieDatabaseDao
     }
 
 }
-/*
-class MovieReviewAdapter (private val reviewClickListener: MovieReviewsListClickListener):  ListAdapter<Review, MovieReviewAdapterListAdapter.ViewHolder>(MovieListDiffCallback()){
-
-}
-
-class MovieReviewsListClickListener(val clickListener: (review: Review) -> Unit) {
-    fun onClick(review: Review) = clickListener(review)
-}
-
- */

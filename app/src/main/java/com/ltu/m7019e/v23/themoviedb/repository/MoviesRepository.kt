@@ -19,7 +19,7 @@ class MoviesRepositoryImpl (
 
     ): MoviesRepository {
     override suspend fun getTopRatedMovies(): List<Movie> {
-        return try {
+        try {
             Timber.tag("TOP_RATED_MOVIES_FROM_REPO").d("you have NETWORK CONNECTION")
             // Fetch data from the network
             val topRatedMovies = apiService.getTopRatedMovies().results
@@ -27,28 +27,31 @@ class MoviesRepositoryImpl (
             movieDatabaseDao.clearTopRatedMovies()
             topRatedMovies.forEach {movie ->
                 movieDatabaseDao.insertTopRatedMovie(TopRatedMovie(movieId = movie.id))
+                movieDatabaseDao.insert(movie)
             }
-            topRatedMovies
+            return topRatedMovies
         } catch (exception: Exception){
             Timber.tag("TOP_RATED_MOVIES_FROM_REPO").d("NO NETWORK CONNECTION, USE LOCAL DATA")
-            movieDatabaseDao.getTopRatedMovies()
+
         }
+        return movieDatabaseDao.getTopRatedMovies()
     }
 
     override suspend fun getPopularMovies(): List<Movie> {
-        return try {
+        try {
             // Fetch data from the network
             val popularMovies = apiService.getPopularMovies().results
             // Update the local cache with the fetched data
             movieDatabaseDao.clearPopularMovies()
             popularMovies.forEach {movie ->
                 movieDatabaseDao.insertPopularMovie(PopularMovie(id=movie.id))
+                movieDatabaseDao.insert(movie)
             }
             return popularMovies
         } catch (exception: Exception){
             Timber.tag("POPULAR_MOVIES_FROM_REPO").d("NO NETWORK CONNECTION, USE LOCAL DATA")
-            movieDatabaseDao.getPopularMovies()
         }
+        return movieDatabaseDao.getPopularMovies()
     }
 
     override suspend fun getMovieReviews(movieId: Long): List<Review> {
@@ -62,8 +65,4 @@ class MoviesRepositoryImpl (
     override suspend fun getSavedMovies(): List<Movie> {
         return movieDatabaseDao.getSavedMovies()
     }
-
-
-
-
 }

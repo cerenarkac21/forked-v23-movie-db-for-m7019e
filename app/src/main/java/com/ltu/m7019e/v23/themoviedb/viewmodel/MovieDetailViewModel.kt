@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.ltu.m7019e.v23.themoviedb.database.MovieDatabaseDao
 import com.ltu.m7019e.v23.themoviedb.model.Movie
+import com.ltu.m7019e.v23.themoviedb.model.SavedMovie
 import kotlinx.coroutines.launch
 
 class MovieDetailViewModel(
@@ -22,13 +23,6 @@ class MovieDetailViewModel(
         }
 
 
-    // pass movie info to reviews fragment
-    private val _navigateToMovieVideosAndReviews = MutableLiveData<Movie?>()
-    val navigateToMovieVideosAndReviews: MutableLiveData<Movie?>
-        get() {
-            return _navigateToMovieVideosAndReviews
-        }
-
     init {
         setIsFavorite(movie)
     }
@@ -42,23 +36,16 @@ class MovieDetailViewModel(
 
     fun onSaveMovieButtonClicked(movie: Movie) {
         viewModelScope.launch {
-            movieDatabaseDao.insert(movie)
+            movieDatabaseDao.insertSavedMovie(SavedMovie(movieId = movie.id))
             setIsFavorite(movie)
         }
     }
 
     fun onRemoveMovieButtonClicked(movie: Movie) {
         viewModelScope.launch {
-            movieDatabaseDao.delete(movie)
+            movieDatabaseDao.deleteSavedMovie(movie.id)
             setIsFavorite(movie)
         }
     }
-/*
-    fun onReviewsButtonClicked(movie: Movie){
-        viewModelScope.launch {
-            movieDatabaseDao.
-        }
-    }
 
- */
 }

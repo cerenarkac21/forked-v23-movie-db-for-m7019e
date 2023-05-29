@@ -6,9 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.ltu.m7019e.v23.themoviedb.model.Movie
 import com.ltu.m7019e.v23.themoviedb.model.PopularMovie
+import com.ltu.m7019e.v23.themoviedb.model.SavedMovie
 import com.ltu.m7019e.v23.themoviedb.model.TopRatedMovie
 
-@Database(entities = [Movie::class, TopRatedMovie::class, PopularMovie::class], version = 3, exportSchema = false)
+@Database(entities = [Movie::class, TopRatedMovie::class, PopularMovie::class, SavedMovie::class], version = 5, exportSchema = false)
 abstract class MovieDatabase : RoomDatabase() {
     abstract val movieDatabaseDao: MovieDatabaseDao
 

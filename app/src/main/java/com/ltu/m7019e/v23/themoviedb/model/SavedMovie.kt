@@ -4,10 +4,14 @@ import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Index
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-@Entity(tableName = "saved_movies")
+@Entity(
+    tableName = "saved_movies",
+    indices = [Index(value = ["id"], unique = true)]
+)
 data class SavedMovie(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "saved_movie_id")
