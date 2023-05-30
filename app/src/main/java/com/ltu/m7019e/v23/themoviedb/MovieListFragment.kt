@@ -1,7 +1,11 @@
 package com.ltu.m7019e.v23.themoviedb
 
+import android.content.Context
+import android.net.ConnectivityManager
+import android.net.Network
+import android.net.NetworkCapabilities
+import android.net.NetworkRequest
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -14,27 +18,17 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.ltu.m7019e.v23.themoviedb.adapter.MovieListAdapter
 import com.ltu.m7019e.v23.themoviedb.adapter.MovieListClickListener
-import com.ltu.m7019e.v23.themoviedb.database.MovieDatabase
 import com.ltu.m7019e.v23.themoviedb.databinding.FragmentMovieListBinding
-import com.ltu.m7019e.v23.themoviedb.model.Movie
 import com.ltu.m7019e.v23.themoviedb.network.DataFetchStatus
-import com.ltu.m7019e.v23.themoviedb.network.NetworkStatusCallback
 import com.ltu.m7019e.v23.themoviedb.viewmodel.MovieListViewModel
 import com.ltu.m7019e.v23.themoviedb.viewmodel.MovieListViewModelFactory
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.MainScope
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
-/**
- * A simple [Fragment] subclass as the default destination in the navigation.
- */
 class MovieListFragment : Fragment() {
     private lateinit var viewModel: MovieListViewModel
     private lateinit var viewModelFactory: MovieListViewModelFactory
-    private lateinit var networkStatusCallback: NetworkStatusCallback
-    //private val coroutineScope: CoroutineScope by lazy { MainScope() }
 
+    private lateinit var connectivityManager: ConnectivityManager
+    private lateinit var networkCallback: ConnectivityManager.NetworkCallback
 
     private var _binding: FragmentMovieListBinding? = null;
     private val binding get() = _binding!!
@@ -52,10 +46,6 @@ class MovieListFragment : Fragment() {
 
         viewModelFactory = MovieListViewModelFactory(movieRepository, application)
         viewModel = ViewModelProvider(this, viewModelFactory)[MovieListViewModel::class.java]
-
-        // Initialize the network status callback
-        networkStatusCallback = NetworkStatusCallback(application, movieRepository)
-        networkStatusCallback.registerNetworkCallback()
 
 
         // set the layout manager as grid layout manager
@@ -135,12 +125,6 @@ class MovieListFragment : Fragment() {
                         viewModel.getPopularMovies()
                     }
                     R.id.action_load_top_rated_movies -> {
-                        /*
-                        coroutineScope.launch {
-                            viewTopRatedMoviesTable()
-                        }
-
-                         */
                         viewModel.getTopRatedMovies()
 
                     }
@@ -151,24 +135,57 @@ class MovieListFragment : Fragment() {
                 return true
             }
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+
+
+        // Initialize ConnectivityManager
+        connectivityManager =
+            requireContext().getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+
+        // Create a NetworkCallback to monitor network connectivity changes
+        networkCallback = object : ConnectivityManager.NetworkCallback() {
+            override fun onAvailable(network: Network) {
+                requireActivity().runOnUiThread {
+                    // Network connection is available, refresh the fragment
+                    refreshFragment()
+                }
+            }
+
+            override fun onLost(network: Network) {
+                requireActivity().runOnUiThread {
+                    // Network connection is lost, show the "no connection" image
+                    binding.statusImage.setImageResource(R.drawable.ic_connection_error)
+                    binding.statusImage.visibility = View.VISIBLE
+                }
+            }
+        }
+
+        // Register the network callback
+        val networkRequest = NetworkRequest.Builder()
+            .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            .build()
+        connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // Unregister the network status callback
-        networkStatusCallback.unregisterNetworkCallback()
-    }
-/*
-    suspend fun viewTopRatedMoviesTable(){
-        val movieDatabase = MovieDatabase.getInstance(requireContext())
-        val movieDao = movieDatabase.movieDatabaseDao
-        val movies: List<Movie> = movieDao.getTopRatedMovies()
-        for (movie in movies) {
-            Timber.tag("MovieData").d("Title: " + movie.title)
 
+        // Unregister the network callback when the fragment is destroyed
+        connectivityManager.unregisterNetworkCallback(networkCallback)
+    }
+
+    private fun refreshFragment() {
+        // Check if the "no connection" image is visible
+        if (binding.statusImage.visibility == View.VISIBLE) {
+            // Hide the "no connection" image
+            binding.statusImage.visibility = View.GONE
+
+            // Trigger the appropriate movie retrieval function based on the last fetched movies type
+            when (viewModel.lastFetchedMoviesType) {
+                MovieListViewModel.MoviesType.POPULAR -> viewModel.getPopularMovies()
+                MovieListViewModel.MoviesType.TOP_RATED -> viewModel.getTopRatedMovies()
+                MovieListViewModel.MoviesType.SAVED -> viewModel.getSavedMovies()
+            }
         }
-
     }
 
- */
 }

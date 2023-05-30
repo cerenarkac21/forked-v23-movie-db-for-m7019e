@@ -1,5 +1,5 @@
 package com.ltu.m7019e.v23.themoviedb.network
-
+/*
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.Network
@@ -10,8 +10,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-class NetworkStatusCallback(private val context: Context, val repository: MoviesRepository) :
+class NetworkStatusCallback(private val context: Context) :
     ConnectivityManager.NetworkCallback() {
+
+
+
     // Register the network callback
     private val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -28,6 +31,7 @@ class NetworkStatusCallback(private val context: Context, val repository: Movies
         super.onAvailable(network)
         val network = connectivityManager.activeNetwork
         val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+        /*
         if (networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) == true){
             CoroutineScope(Dispatchers.IO).launch {
                 repository.getPopularMovies()
@@ -35,7 +39,7 @@ class NetworkStatusCallback(private val context: Context, val repository: Movies
             CoroutineScope(Dispatchers.IO).launch {
                 repository.getTopRatedMovies()
             }
-        }
+        }*/
 
     }
 
@@ -56,3 +60,4 @@ class NetworkStatusCallback(private val context: Context, val repository: Movies
     }
 
 }
+*/

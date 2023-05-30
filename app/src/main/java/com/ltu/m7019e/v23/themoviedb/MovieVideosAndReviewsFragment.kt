@@ -18,7 +18,6 @@ import com.ltu.m7019e.v23.themoviedb.adapter.MovieVideoListClickListener
 import com.ltu.m7019e.v23.themoviedb.databinding.FragmentMovieVideosAndReviewsBinding
 import com.ltu.m7019e.v23.themoviedb.model.Movie
 import com.ltu.m7019e.v23.themoviedb.network.DataFetchStatus
-import com.ltu.m7019e.v23.themoviedb.network.NetworkStatusCallback
 import com.ltu.m7019e.v23.themoviedb.utils.CustomLinearLayoutManager
 import com.ltu.m7019e.v23.themoviedb.viewmodel.*
 
@@ -31,7 +30,7 @@ class MovieVideosAndReviewsFragment : Fragment() {
     private lateinit var videosViewModel: MovieVideoListViewModel
     private lateinit var videosViewModelFactory: MovieVideoListViewModelFactory
 
-    private lateinit var networkStatusCallback: NetworkStatusCallback
+    //private lateinit var networkStatusCallback: NetworkStatusCallback
 
     private var _binding: FragmentMovieVideosAndReviewsBinding? = null
     private val binding get() = _binding!!
@@ -68,10 +67,13 @@ class MovieVideosAndReviewsFragment : Fragment() {
         videosViewModel =
             ViewModelProvider(this, videosViewModelFactory).get(MovieVideoListViewModel::class.java)
 
+        /*
         // Initialize the network status callback
         networkStatusCallback = NetworkStatusCallback(application, movieRepository)
         networkStatusCallback.registerNetworkCallback()
 
+
+         */
 
         binding.reviewsRecyclerView.layoutManager = CustomLinearLayoutManager(requireContext())
 
@@ -184,10 +186,12 @@ class MovieVideosAndReviewsFragment : Fragment() {
             else -> super.onOptionsItemSelected(item)
         }
     }
-
+/*
     override fun onDestroyView() {
         super.onDestroyView()
         // Unregister the network status callback
         networkStatusCallback.unregisterNetworkCallback()
     }
+
+ */
 }

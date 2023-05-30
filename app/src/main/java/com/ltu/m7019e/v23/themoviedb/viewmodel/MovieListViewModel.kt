@@ -8,10 +8,18 @@ import androidx.lifecycle.viewModelScope
 import com.ltu.m7019e.v23.themoviedb.model.Movie
 import com.ltu.m7019e.v23.themoviedb.network.DataFetchStatus
 import com.ltu.m7019e.v23.themoviedb.repository.MoviesRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class MovieListViewModel(private val moviesRepository: MoviesRepository, application: Application) : AndroidViewModel(application) {
+
+    //private val networkStatusCallback = NetworkStatusCallback(application, moviesRepository)
+
+    enum class MoviesType {
+        POPULAR, TOP_RATED, SAVED
+    }
+
+    var lastFetchedMoviesType: MoviesType = MoviesType.POPULAR
 
     private val _dataFetchStatus = MutableLiveData<DataFetchStatus>()
     val dataFetchStatus: LiveData<DataFetchStatus>
@@ -46,6 +54,7 @@ class MovieListViewModel(private val moviesRepository: MoviesRepository, applica
 
     fun getPopularMovies() {
         viewModelScope.launch {
+            lastFetchedMoviesType = MoviesType.POPULAR
             try {
                 /*
                 don't need anymore. use the repository pattern
@@ -53,26 +62,27 @@ class MovieListViewModel(private val moviesRepository: MoviesRepository, applica
                     TMDBApi.movieListRetrofitService.getPopularMovies()
 
                  */
-                _movieList.value = moviesRepository.getPopularMovies()
-                _dataFetchStatus.value = DataFetchStatus.DONE
-
+                _movieList.value = moviesRepository.getPopularMovies(_dataFetchStatus)
 
             } catch (e: Exception) {
-                _dataFetchStatus.value = DataFetchStatus.ERROR
                 _movieList.value = arrayListOf()
             }
+            Timber.tag("getPopularMovies in view model after try and catch:").d(_dataFetchStatus.value.toString())
+
         }
     }
 
     fun getTopRatedMovies() {
         viewModelScope.launch {
+            lastFetchedMoviesType = MoviesType.TOP_RATED
             try {
-                _movieList.value = moviesRepository.getTopRatedMovies()
-                _dataFetchStatus.value = DataFetchStatus.DONE
+                _movieList.value = moviesRepository.getTopRatedMovies(_dataFetchStatus)
+
             } catch (e: Exception) {
-                _dataFetchStatus.value = DataFetchStatus.ERROR
                 _movieList.value = arrayListOf()
             }
+            Timber.tag("getTopRatedMovies in view model after try and catch:").d(_dataFetchStatus.value.toString())
+
         }
     }
 
@@ -80,6 +90,7 @@ class MovieListViewModel(private val moviesRepository: MoviesRepository, applica
         viewModelScope.launch {
             val movies = moviesRepository.getSavedMovies()
             _movieList.value = movies
+            lastFetchedMoviesType = MoviesType.SAVED
         }
     }
 }

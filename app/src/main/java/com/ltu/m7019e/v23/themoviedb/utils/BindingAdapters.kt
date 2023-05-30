@@ -11,7 +11,6 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.bumptech.glide.Glide
 import java.text.DecimalFormat
-import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -20,7 +19,7 @@ fun bindPosterImage(imgView: ImageView, imgUrl: String) {
     imgUrl.let { posterPath ->
         Glide
             .with(imgView)
-            .load(SECRETS.POSTER_IMAGE_BASE_URL + SECRETS.POSTER_IMAGE_WIDTH + posterPath)
+            .load(CONSTANTS.POSTER_IMAGE_BASE_URL + CONSTANTS.POSTER_IMAGE_WIDTH + posterPath)
             .into(imgView)
     }
 }
@@ -30,7 +29,7 @@ fun bindBackdropImage(imgView: ImageView, imgUrl: String) {
     imgUrl.let { backdropPath ->
         Glide
             .with(imgView)
-            .load(SECRETS.BACKDROP_IMAGE_BASE_URL + SECRETS.BACKDROP_IMAGE_WIDTH + backdropPath)
+            .load(CONSTANTS.BACKDROP_IMAGE_BASE_URL + CONSTANTS.BACKDROP_IMAGE_WIDTH + backdropPath)
             .into(imgView)
     }
 }

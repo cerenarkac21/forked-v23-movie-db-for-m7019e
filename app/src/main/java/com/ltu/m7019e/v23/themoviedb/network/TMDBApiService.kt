@@ -5,7 +5,7 @@ import com.ltu.m7019e.v23.themoviedb.database.MovieDatabase
 import com.ltu.m7019e.v23.themoviedb.database.MovieDatabaseDao
 import com.ltu.m7019e.v23.themoviedb.repository.MoviesRepository
 import com.ltu.m7019e.v23.themoviedb.repository.MoviesRepositoryImpl
-import com.ltu.m7019e.v23.themoviedb.utils.SECRETS
+import com.ltu.m7019e.v23.themoviedb.utils.CONSTANTS
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.OkHttpClient
@@ -67,7 +67,7 @@ class AppContainerImpl (context: Context): AppContainer {
                 .build()
         )
         .addConverterFactory(MoshiConverterFactory.create(moshi))
-        .baseUrl(SECRETS.MOVIE_LIST_BASE_URL)
+        .baseUrl(CONSTANTS.MOVIE_LIST_BASE_URL)
         .build()
 
 
@@ -88,13 +88,13 @@ interface TMDBApiService {
     suspend fun getPopularMovies(
         // after /popular?, "api_key" will be added to the URL
         @Query("api_key")
-        apiKey: String = SECRETS.API_KEY
+        apiKey: String = CONSTANTS.API_KEY
     ): MovieResponse
 
     @GET("top_rated")
     suspend fun getTopRatedMovies(
         @Query("api_key")
-        apiKey: String = SECRETS.API_KEY
+        apiKey: String = CONSTANTS.API_KEY
     ): MovieResponse
 
     @GET("{movie_id}/reviews")
@@ -102,7 +102,7 @@ interface TMDBApiService {
         @Path("movie_id")
         movieId: Long,
         @Query("api_key")
-        apiKey: String = SECRETS.API_KEY
+        apiKey: String = CONSTANTS.API_KEY
     ): MovieReviewResponse
 
     @GET("{movie_id}/videos")
@@ -110,6 +110,6 @@ interface TMDBApiService {
         @Path("movie_id")
         movieId: Long,
         @Query("api_key")
-        apiKey: String = SECRETS.API_KEY
+        apiKey: String = CONSTANTS.API_KEY
     ): MovieVideoResponse
 }
